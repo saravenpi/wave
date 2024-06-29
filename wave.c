@@ -8,7 +8,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-void sendHTTPResponse(int clientFd, const char *body, int statusCode)
+void sendResponse(int clientFd, const char *body, int statusCode)
 {
     char response[BUFFER_SIZE];
     ssize_t result;
@@ -76,7 +76,7 @@ Server *initServer(int port)
     return server;
 }
 
-void registerEndpoint(Server *server, const char *method, const char *path,
+void addEndpoint(Server *server, const char *method, const char *path,
     RequestHandler handler)
 {
     if (server->endpointCount < MAX_ENDPOINTS) {
@@ -96,22 +96,22 @@ void findEndpointAndHandle(Server *server, int clientFd, const char *request)
     char *method = NULL;
 
     if (!requestLine)
-        return sendHTTPResponse(clientFd, "Bad Request", BAD_REQUEST);
+        return sendResponse(clientFd, "Bad Request", BAD_REQUEST);
     method = strtok(requestLine, " ");
     path = strtok(NULL, " ");
     if (!path || !method)
-        return sendHTTPResponse(clientFd, "Bad Request", BAD_REQUEST);
+        return sendResponse(clientFd, "Bad Request", BAD_REQUEST);
     printf("[WAVE] Request: %s %s\n", method, path);
     for (int i = 0; i < server->endpointCount; i++) {
         if (strcmp(path, server->endpoints[i].path) != 0)
             continue;
         if (strcmp(method, server->endpoints[i].method) != 0) {
-            return sendHTTPResponse(
+            return sendResponse(
                 clientFd, "Method Not Allowed", METHOD_NOT_ALLOWED);
         }
         return server->endpoints[i].handler(clientFd, request);
     }
-    return sendHTTPResponse(clientFd, "Not Found", NOT_FOUND);
+    return sendResponse(clientFd, "Not Found", NOT_FOUND);
 }
 
 void disconnectClient(Server *server, int clientFd)
@@ -218,7 +218,7 @@ void startWebServer(Server *server)
 
 void defaultHandler(int clientFd, const char *request)
 {
-    sendHTTPResponse(clientFd, "Hello, World!", OK);
+    sendResponse(clientFd, "Hello, World!", OK);
 }
 
 Request *parseRequest(const char *request)
