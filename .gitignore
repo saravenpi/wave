@@ -1,0 +1,38 @@
+# CMake build directories
+/build/
+
+# Compiled object files
+*.o
+*.obj
+
+# Compiled libraries
+*.a
+*.so
+
+# Dependency files (e.g., for dependency management tools)
+*.d
+# Executable binaries
+*.exe
+*.out
+
+# Visual Studio files
+.vs/
+
+# Xcode files
+*.xcodeproj
+*.xcworkspace
+
+# Code::Blocks files
+*.cbp
+*.layout
+*.depend
+
+# CMake build scripts
+CMakeFiles/
+CMakeCache.txt
+CMakeScripts/
+Makefile
+cmake_install.cmake
+
+libwave.*
+test/
