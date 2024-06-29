@@ -1,4 +1,4 @@
-# Wave
+# 🌊 Wave
 ## About
 Wave is a simple C http webserver library
 
