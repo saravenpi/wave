@@ -1,4 +1,4 @@
-# 🌊 Wave
+# 🌊 Wave, the simple HTTP webserver library for C
 ## About
 Wave is a simple C http webserver library. You can use it to create your backend in C. It supports serving static files.
 
