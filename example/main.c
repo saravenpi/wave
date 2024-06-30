@@ -1,15 +1,21 @@
 #include "wave.h"
 
-void customHandler(int clientFd, const char *request)
+void aboutHandler(int clientFd, const char *request)
 {
     sendResponse(clientFd, "This is a custom endpoint!", 200);
 }
 
-int main(int argc, char *argv[])
+void customHandler(int clientFd, const char *request)
 {
-    Server *server = initServer(8080);
+    sendFileResponse(clientFd, "static/index.html");
+}
+
+int main(void)
+{
+    Server *server = initServer(8081);
 
     addEndpoint(server, "GET", "/", defaultHandler);
+    addEndpoint(server, "GET", "/about", aboutHandler);
     addEndpoint(server, "GET", "/custom", customHandler);
     startWebServer(server);
     return 0;

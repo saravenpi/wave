@@ -2,28 +2,39 @@
 ## About
 Wave is a simple C http webserver library
 
+<img alt="Welcome to Wave" src="https://vhs.charm.sh/vhs-2v00MTfYSNILvFPglbeypg.gif" width="600" />
+
 ## Example
-Here is a code example of the wave library
+
+Here is an example to understand how to use the wave library:
 ```c
 #include "wave.h"
 
-void customHandler(int clientFd, const char *request)
+void aboutHandler(int clientFd, const char *request)
 {
     sendResponse(clientFd, "This is a custom endpoint!", 200);
 }
 
-int main(int argc, char *argv[])
+void customHandler(int clientFd, const char *request)
 {
-    Server *server = initServer(8080);
+    sendFileResponse(clientFd, "static/index.html");
+}
+
+int main(void)
+{
+    Server *server = initServer(8081);
 
     addEndpoint(server, "GET", "/", defaultHandler);
+    addEndpoint(server, "GET", "/about", aboutHandler);
     addEndpoint(server, "GET", "/custom", customHandler);
     startWebServer(server);
     return 0;
 }
 ```
 
-Now compile your code with:
+You can compile your webserver with:
 ```bash
 gcc main.c -I. -lwave -L. -Wl,-rpath,.
 ```
+
+🎉 And you're now ready to go!

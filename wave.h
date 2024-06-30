@@ -32,6 +32,7 @@ typedef struct {
     int addrlen;
     Endpoint endpoints[MAX_ENDPOINTS];
     int endpointCount;
+    char *staticPath;
 } Server;
 
 typedef struct {
@@ -47,6 +48,7 @@ void startWebServer(Server *server);
 void defaultHandler(int clientFd, const char *request);
 void addEndpoint(Server *server, const char *method, const char *path,
     RequestHandler handler);
-void sendResponse(int clientFd, const char *body, int statusCode);
 Request *parseRequest(const char *request);
+void sendResponse(int clientFd, const char *body, int statusCode);
+void sendFileResponse(int clientFd, const char *path);
 #endif

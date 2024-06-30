@@ -8,6 +8,56 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+char *getContentType(const char *path)
+{
+    if (strstr(path, ".css"))
+        return "text/css";
+    if (strstr(path, ".js"))
+        return "application/javascript";
+    if (strstr(path, ".png"))
+        return "image/png";
+    if (strstr(path, ".jpg") || strstr(path, ".jpeg"))
+        return "image/jpeg";
+    if (strstr(path, ".gif"))
+        return "image/gif";
+    if (strstr(path, ".mp4"))
+        return "video/mp4";
+    if (strstr(path, ".pdf"))
+        return "application/pdf";
+    if (strstr(path, ".html") || strstr(path, ".htm"))
+        return "text/html";
+    return "application/octet-stream";
+}
+
+void sendFileResponse(int clientFd, const char *path)
+{
+    FILE *file;
+    char response[BUFFER_SIZE];
+    size_t bytesRead;
+    char buffer[BUFFER_SIZE];
+    char *contentType;
+
+    contentType = getContentType(path);
+    file = fopen(path, "rb");
+    if (!file) {
+        perror("[WAVE] Failed to open file");
+        return sendResponse(clientFd, "Not Found", NOT_FOUND);
+    }
+    snprintf(response, sizeof(response),
+        "HTTP/1.1 200 OK\r\n"
+        "Content-Type: %s\r\n"
+        "Connection: close\r\n"
+        "\r\n",
+        contentType);
+    write(clientFd, response, strlen(response));
+
+    while ((bytesRead = fread(buffer, 1, sizeof(buffer), file)) > 0) {
+        write(clientFd, buffer, bytesRead);
+    }
+
+    fclose(file);
+}
+
 void sendResponse(int clientFd, const char *body, int statusCode)
 {
     char response[BUFFER_SIZE];
@@ -32,48 +82,6 @@ void sendResponse(int clientFd, const char *body, int statusCode)
     if (result == -1) {
         perror("[WAVE] Failed to send response");
     }
-}
-
-Server *initServer(int port)
-{
-    Server *server = (Server *)malloc(sizeof(Server));
-    if (!server) {
-        perror("[WAVE] Failed to allocate memory for server");
-        exit(EXIT_FAILURE);
-    }
-
-    server->addrlen = sizeof(struct sockaddr_in);
-    if ((server->fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
-        perror("[WAVE] Socket creation failed");
-        free(server);
-        exit(EXIT_FAILURE);
-    }
-    server->address.sin_family = AF_INET;
-    server->address.sin_addr.s_addr = INADDR_ANY;
-    server->address.sin_port = htons(port);
-
-    if (bind(server->fd, (struct sockaddr *)&server->address,
-            server->addrlen) < 0) {
-        perror("[WAVE] Bind failed");
-        close(server->fd);
-        free(server);
-        exit(EXIT_FAILURE);
-    }
-
-    if (listen(server->fd, 3) < 0) {
-        perror("[WAVE] Listen failed");
-        close(server->fd);
-        free(server);
-        exit(EXIT_FAILURE);
-    }
-
-    for (int i = 0; i < MAX_CLIENTS; i++) {
-        server->clients[i] = 0;
-        memset(server->buffers[i], 0, BUFFER_SIZE);
-    }
-    server->maxFd = server->fd;
-    server->endpointCount = 0;
-    return server;
 }
 
 void addEndpoint(Server *server, const char *method, const char *path,
@@ -111,7 +119,7 @@ void findEndpointAndHandle(Server *server, int clientFd, const char *request)
         }
         return server->endpoints[i].handler(clientFd, request);
     }
-    return sendResponse(clientFd, "Not Found", NOT_FOUND);
+    return sendFileResponse(clientFd, path + 1);
 }
 
 void disconnectClient(Server *server, int clientFd)
@@ -192,6 +200,48 @@ void handleClientRequests(Server *server)
             handleClient(server, server->clients[i], i);
         }
     }
+}
+
+Server *initServer(int port)
+{
+    Server *server = (Server *)malloc(sizeof(Server));
+    if (!server) {
+        perror("[WAVE] Failed to allocate memory for server");
+        exit(EXIT_FAILURE);
+    }
+
+    server->addrlen = sizeof(struct sockaddr_in);
+    if ((server->fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
+        perror("[WAVE] Socket creation failed");
+        free(server);
+        exit(EXIT_FAILURE);
+    }
+    server->address.sin_family = AF_INET;
+    server->address.sin_addr.s_addr = INADDR_ANY;
+    server->address.sin_port = htons(port);
+
+    if (bind(server->fd, (struct sockaddr *)&server->address,
+            server->addrlen) < 0) {
+        perror("[WAVE] Bind failed");
+        close(server->fd);
+        free(server);
+        exit(EXIT_FAILURE);
+    }
+
+    if (listen(server->fd, 3) < 0) {
+        perror("[WAVE] Listen failed");
+        close(server->fd);
+        free(server);
+        exit(EXIT_FAILURE);
+    }
+
+    for (int i = 0; i < MAX_CLIENTS; i++) {
+        server->clients[i] = 0;
+        memset(server->buffers[i], 0, BUFFER_SIZE);
+    }
+    server->maxFd = server->fd;
+    server->endpointCount = 0;
+    return server;
 }
 
 void startWebServer(Server *server)

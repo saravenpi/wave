@@ -36,3 +36,7 @@ cmake_install.cmake
 
 libwave.*
 test/
+
+# VHS files
+*.gif
+*.tape
