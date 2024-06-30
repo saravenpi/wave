@@ -246,10 +246,9 @@ Server *initServer(int port)
 
 void startWebServer(Server *server)
 {
-    printf("🌊 Wave - A simple C web server\n");
-    printf(
-        "[WAVE] Server started on port %d\n", ntohs(server->address.sin_port));
-    printf("[WAVE] Server host is %s\n", inet_ntoa(server->address.sin_addr));
+    printf("🌊 Wave server started !\n");
+    printf("[WAVE] Server port: %d\n", ntohs(server->address.sin_port));
+    printf("[WAVE] Server host: %s\n", inet_ntoa(server->address.sin_addr));
     while (1) {
         addSocketsToSet(server);
         int activity =
