@@ -2,7 +2,7 @@
 ## About
 Wave is a simple C http webserver library
 
-<img alt="Welcome to Wave" src="https://vhs.charm.sh/vhs-2v00MTfYSNILvFPglbeypg.gif" width="600" />
+<img alt="Welcome to Wave" src="https://vhs.charm.sh/vhs-2P0MJr8iZUNzqeP4YVbpPK.gif" width="600" />
 
 ## Example
 

@@ -12,7 +12,7 @@ void customHandler(int clientFd, const char *request)
 
 int main(void)
 {
-    Server *server = initServer(8081);
+    Server *server = initServer(8080);
 
     addEndpoint(server, "GET", "/", defaultHandler);
     addEndpoint(server, "GET", "/about", aboutHandler);

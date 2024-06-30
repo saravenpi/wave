@@ -11,6 +11,7 @@
 
 # Dependency files (e.g., for dependency management tools)
 *.d
+
 # Executable binaries
 *.exe
 *.out
@@ -40,3 +41,8 @@ test/
 # VHS files
 *.gif
 *.tape
+
+# Example files
+example/wave_server
+
+.clangd
