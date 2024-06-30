@@ -4,7 +4,7 @@ Wave is a simple C http webserver library. You can use it to create your backend
 
 <img alt="Welcome to Wave" src="https://vhs.charm.sh/vhs-5NpF84KkSDRpi9GRSHPxbk.gif" width="600" />
 
-## Example
+## How to use it ?
 
 ### Prerequisites
 - First you need to compile the library and add the `libwave.so` file in your codebase.
@@ -45,4 +45,4 @@ You can compile your webserver with:
 gcc main.c -I. -lwave -L. -Wl,-rpath,.
 ```
 
-🎉 And you're now ready to go!
+🎉 And your webserver now ready to go !
