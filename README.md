@@ -6,10 +6,13 @@ Wave is a simple C http webserver library. You can use it to create your backend
 
 ## Example
 
+### Prerequisites
 - First you need to compile the library and add the `libwave.so` file in your codebase.
 - After that copy the `wave.h` header file of the library in your codebase.
 
 Now the wave library is ready to be used!
+
+### Example webserver implementation
 
 Here is an example implementation using the wave library:
 ```c
