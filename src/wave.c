@@ -8,13 +8,13 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-void addSocketsToSet(Server *server);
-void checkNewConnections(Server *server);
-void handleClientRequests(Server *server);
+void add_sockets_to_set(server_t *server);
+void check_new_connections(server_t *server);
+void handle_client_requests(server_t *server);
 
-Server *initServer(int port)
+server_t *init_server(int port)
 {
-    Server *server = (Server *)malloc(sizeof(Server));
+    server_t *server = (server_t *)malloc(sizeof(server_t));
     if (!server) {
         perror("[WAVE] Failed to allocate memory for server");
         exit(EXIT_FAILURE);
@@ -49,28 +49,28 @@ Server *initServer(int port)
         server->clients[i] = 0;
         memset(server->buffers[i], 0, BUFFER_SIZE);
     }
-    server->maxFd = server->fd;
-    server->endpointCount = 0;
+    server->max_fd = server->fd;
+    server->route_count = 0;
     return server;
 }
 
-void startWebServer(Server *server)
+void start_server(server_t *server)
 {
     printf("🌊 Wave server started !\n");
-    printf("[WAVE] Server port: %d\n", ntohs(server->address.sin_port));
-    printf("[WAVE] Server host: %s\n", inet_ntoa(server->address.sin_addr));
+    printf("[WAVE] server_t port: %d\n", ntohs(server->address.sin_port));
+    printf("[WAVE] server_t host: %s\n", inet_ntoa(server->address.sin_addr));
     while (1) {
-        addSocketsToSet(server);
+        add_sockets_to_set(server);
         int activity =
-            select(server->maxFd + 1, &server->readFdSet, NULL, NULL, NULL);
+            select(server->max_fd + 1, &server->read_fd_set, NULL, NULL, NULL);
         if (activity < 0) {
             perror("[WAVE] Select failed");
             break;
         }
-        if (FD_ISSET(server->fd, &server->readFdSet)) {
-            checkNewConnections(server);
+        if (FD_ISSET(server->fd, &server->read_fd_set)) {
+            check_new_connections(server);
         }
-        handleClientRequests(server);
+        handle_client_requests(server);
     }
-    printf("[WAVE] Server shutting down\n");
+    printf("[WAVE] server_t shutting down\n");
 }

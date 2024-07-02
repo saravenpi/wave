@@ -3,7 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 
-char *getContentType(const char *path)
+char *get_content_type(const char *path)
 {
     if (strstr(path, ".css"))
         return "text/css";
@@ -24,35 +24,35 @@ char *getContentType(const char *path)
     return "application/octet-stream";
 }
 
-void sendFileResponse(int clientFd, const char *path)
+void send_file_response(int client_fd, const char *path)
 {
     FILE *file;
     char response[BUFFER_SIZE];
-    size_t bytesRead;
+    size_t bytes_read;
     char buffer[BUFFER_SIZE];
-    char *contentType;
+    char *content_type;
 
-    contentType = getContentType(path);
+    content_type = get_content_type(path);
     file = fopen(path, "rb");
     if (!file) {
         perror("[WAVE] Failed to open file");
-        return sendResponse(clientFd, "Not Found", NOT_FOUND);
+        return send_response(client_fd, "Not Found", NOT_FOUND);
     }
     snprintf(response, sizeof(response),
         "HTTP/1.1 200 OK\r\n"
         "Content-Type: %s\r\n"
         "Connection: close\r\n"
         "\r\n",
-        contentType);
-    write(clientFd, response, strlen(response));
+        content_type);
+    write(client_fd, response, strlen(response));
 
-    while ((bytesRead = fread(buffer, 1, sizeof(buffer), file)) > 0) {
-        write(clientFd, buffer, bytesRead);
+    while ((bytes_read = fread(buffer, 1, sizeof(buffer), file)) > 0) {
+        write(client_fd, buffer, bytes_read);
     }
     fclose(file);
 }
 
-void sendResponse(int clientFd, const char *body, int statusCode)
+void send_response(int client_fd, const char *body, int statusCode)
 {
     char response[BUFFER_SIZE];
     ssize_t result;
@@ -72,7 +72,7 @@ void sendResponse(int clientFd, const char *body, int statusCode)
         "\r\n"
         "%s",
         statusCode, strlen(body), body);
-    result = write(clientFd, response, strlen(response));
+    result = write(client_fd, response, strlen(response));
     if (result == -1) {
         perror("[WAVE] Failed to send response");
     }

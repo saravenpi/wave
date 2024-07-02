@@ -3,13 +3,14 @@
 #include <string.h>
 #include <unistd.h>
 
-void findEndpointAndHandle(Server *server, int clientFd, const char *request);
+void find_route_and_handle(
+    server_t *server, int client_fd, const char *request);
 
-void disconnectClient(Server *server, int clientFd)
+void disconnect_client(server_t *server, int client_fd)
 {
     for (int i = 0; i < MAX_CLIENTS; i++) {
-        if (server->clients[i] == clientFd) {
-            close(clientFd);
+        if (server->clients[i] == client_fd) {
+            close(client_fd);
             server->clients[i] = 0;
             memset(server->buffers[i], 0, BUFFER_SIZE);
             break;
@@ -17,68 +18,68 @@ void disconnectClient(Server *server, int clientFd)
     }
 }
 
-void processClientData(Server *server, int clientFd, int index)
+void process_client_data(server_t *server, int client_fd, int index)
 {
     int valread;
     char buffer[BUFFER_SIZE];
-    int requestComplete;
+    int request_complete;
     memset(buffer, 0, BUFFER_SIZE);
 
-    valread = read(clientFd, buffer, BUFFER_SIZE - 1);
+    valread = read(client_fd, buffer, BUFFER_SIZE - 1);
     if (valread == 0) {
-        return disconnectClient(server, clientFd);
+        return disconnect_client(server, client_fd);
     }
     if (valread < 0) {
         perror("[WAVE] Read failed");
-        return disconnectClient(server, clientFd);
+        return disconnect_client(server, client_fd);
     }
     buffer[valread] = '\0';
     strncat(server->buffers[index], buffer,
         BUFFER_SIZE - strlen(server->buffers[index]) - 1);
-    requestComplete = strstr(server->buffers[index], "\r\n\r\n") != NULL;
-    if (requestComplete) {
-        findEndpointAndHandle(server, clientFd, server->buffers[index]);
-        return disconnectClient(server, clientFd);
+    request_complete = strstr(server->buffers[index], "\r\n\r\n") != NULL;
+    if (request_complete) {
+        find_route_and_handle(server, client_fd, server->buffers[index]);
+        return disconnect_client(server, client_fd);
     }
 }
 
-void checkNewConnections(Server *server)
+void check_new_connections(server_t *server)
 {
-    int newSocket;
-    if ((newSocket = accept(server->fd, (struct sockaddr *)&server->address,
+    int new_socket;
+    if ((new_socket = accept(server->fd, (struct sockaddr *)&server->address,
              (socklen_t *)&server->addrlen)) < 0) {
         perror("[WAVE] Accept failed");
         return;
     }
     for (int i = 0; i < MAX_CLIENTS; i++) {
         if (server->clients[i] == 0) {
-            server->clients[i] = newSocket;
+            server->clients[i] = new_socket;
             break;
         }
     }
 }
 
-void addSocketsToSet(Server *server)
+void add_sockets_to_set(server_t *server)
 {
-    FD_ZERO(&server->readFdSet);
-    FD_SET(server->fd, &server->readFdSet);
-    server->maxFd = server->fd;
+    FD_ZERO(&server->read_fd_set);
+    FD_SET(server->fd, &server->read_fd_set);
+    server->max_fd = server->fd;
     for (int i = 0; i < MAX_CLIENTS; i++) {
         if (server->clients[i] > 0) {
-            FD_SET(server->clients[i], &server->readFdSet);
-            if (server->clients[i] > server->maxFd) {
-                server->maxFd = server->clients[i];
+            FD_SET(server->clients[i], &server->read_fd_set);
+            if (server->clients[i] > server->max_fd) {
+                server->max_fd = server->clients[i];
             }
         }
     }
 }
 
-void handleClientRequests(Server *server)
+void handle_client_requests(server_t *server)
 {
     for (int i = 0; i < MAX_CLIENTS; i++) {
         if (server->clients[i] > 0 &&
-            FD_ISSET(server->clients[i], &server->readFdSet)) {
-            processClientData(server, server->clients[i], i);
+            FD_ISSET(server->clients[i], &server->read_fd_set)) {
+            process_client_data(server, server->clients[i], i);
         }
     }
 }

@@ -1,24 +1,24 @@
-
 #include "wave.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-Request *parseRequest(const char *request)
+// Parse request and return Request object
+request_t *parse_request(const char *request)
 {
-    Request *req = (Request *)malloc(sizeof(Request));
+    request_t *req = (request_t *)malloc(sizeof(request_t));
     if (!req) {
         perror("[WAVE] Failed to allocate memory for request");
         return NULL;
     }
 
     // Parse request line
-    char *requestLine = strtok(strdup(request), "\r\n");
-    if (requestLine) {
-        req->method = strdup(strtok(requestLine, " "));
+    char *request_line = strtok(strdup(request), "\r\n");
+    if (request_line) {
+        req->method = strdup(strtok(request_line, " "));
         req->path = strdup(strtok(NULL, " "));
         req->version = strdup(strtok(NULL, " "));
-        free(requestLine);
+        free(request_line);
     } else {
         free(req);
         return NULL;

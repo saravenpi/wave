@@ -2,10 +2,10 @@ cmake_minimum_required(VERSION 3.5)
 
 project(Wave)
 
-set(CMAKE_C_FLAGS "-Wall")
+set(CMAKE_C_FLAGS "-Wall -I.")
 
-set(SRCS src/wave.c src/connection.c src/endpoint.c src/response.c src/request.c)
-set(OBJS src/wave.o src/connection.o src/endpoint.o src/response.o src/request.o)
+set(SRCS src/wave.c src/route.c src/connection.c src/response.c src/request.c)
+set(OBJS src/wave.o src/route.o src/connection.o src/response.o src/request.o)
 
 set(NAME wave)
 set(LIBRARY libwave.so)
