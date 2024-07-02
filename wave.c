@@ -54,7 +54,6 @@ void sendFileResponse(int clientFd, const char *path)
     while ((bytesRead = fread(buffer, 1, sizeof(buffer), file)) > 0) {
         write(clientFd, buffer, bytesRead);
     }
-
     fclose(file);
 }
 
