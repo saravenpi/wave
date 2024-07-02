@@ -38,7 +38,7 @@ void find_route_and_handle(
         }
         return server->routes[i].handler(client_fd, request);
     }
-    return send_file_response(client_fd, path + 1);
+    return send_file_response(client_fd, path);
 }
 
 void default_handler(int client_fd, const char *request)

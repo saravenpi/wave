@@ -12,6 +12,7 @@ typedef enum {
     NOT_FOUND = 404,
     INTERNAL_SERVER_ERROR = 500,
     METHOD_NOT_ALLOWED = 405,
+    FORBIDDEN = 403
 } http_status_t;
 
 typedef void (*request_handler_t)(int client_fd, const char *request);

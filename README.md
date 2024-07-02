@@ -25,12 +25,12 @@ void about_handler(int client_fd, const char *request)
 
 void custom_handler(int client_fd, const char *request)
 {
-    send_file_response(client_fd, "static/index.html");
+    send_file_response(client_fd, "index.html");
 }
 
 int main(void)
 {
-   server_t  *server = init_server(8080);
+    server_t *server = init_server(8080);
 
     add_route(server, "GET", "/", default_handler);
     add_route(server, "GET", "/about", about_handler);
