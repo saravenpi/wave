@@ -14,7 +14,7 @@ typedef enum {
     METHOD_NOT_ALLOWED = 405,
 } http_status_t;
 
-typedef void (*request_handler_t)(int clientFd, const char *request);
+typedef void (*request_handler_t)(int client_fd, const char *request);
 
 typedef struct {
     char *path;
@@ -48,6 +48,6 @@ void default_handler(int clientFd, const char *request);
 void add_route(server_t *server, const char *method, const char *path,
     request_handler_t handler);
 request_t *parse_request(const char *request);
-void send_response(int clientFd, const char *body, int statusCode);
+void send_response(int client_fd, const char *body, int status_code);
 void send_file_response(int clientFd, const char *path);
 #endif

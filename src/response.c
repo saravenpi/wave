@@ -52,13 +52,13 @@ void send_file_response(int client_fd, const char *path)
     fclose(file);
 }
 
-void send_response(int client_fd, const char *body, int statusCode)
+void send_response(int client_fd, const char *body, int status_code)
 {
     char response[BUFFER_SIZE];
     ssize_t result;
 
-    if (statusCode < 100 || statusCode >= 600) {
-        fprintf(stderr, "[WAVE] Invalid status code: %d\n", statusCode);
+    if (status_code < 100 || status_code >= 600) {
+        fprintf(stderr, "[WAVE] Invalid status code: %d\n", status_code);
         return;
     }
     if (strlen(body) >= BUFFER_SIZE) {
@@ -71,7 +71,7 @@ void send_response(int client_fd, const char *body, int statusCode)
         "Content-Length: %zu\r\n"
         "\r\n"
         "%s",
-        statusCode, strlen(body), body);
+        status_code, strlen(body), body);
     result = write(client_fd, response, strlen(response));
     if (result == -1) {
         perror("[WAVE] Failed to send response");
