@@ -4,13 +4,13 @@ project(Wave)
 
 set(CMAKE_C_FLAGS "-Wall")
 
-set(SRC wave.c)
-set(OBJ wave.o)
+set(SRCS src/wave.c src/connection.c src/endpoint.c src/response.c src/request.c)
+set(OBJS src/wave.o src/connection.o src/endpoint.o src/response.o src/request.o)
+
 set(NAME wave)
 set(LIBRARY libwave.so)
 
-
-add_library(${LIBRARY} SHARED ${SRC})
+add_library(${LIBRARY} SHARED ${SRCS})
 set_target_properties(${LIBRARY} PROPERTIES OUTPUT_NAME ${NAME})
 target_compile_options(${LIBRARY} PRIVATE ${CMAKE_C_FLAGS})
 
